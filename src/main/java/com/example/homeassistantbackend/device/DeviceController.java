@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -19,6 +20,15 @@ public class DeviceController {
         return IterableUtils.toList(deviceRepository.findAll()).stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/api/device/{id}")
+    public DeviceDTO getDevice(@PathVariable("id") long id) {
+        Optional<Device> optionalDevice = deviceRepository.findById(id);
+        if(!optionalDevice.isPresent()) {
+            throw new RuntimeException("device is not found: " + id);
+        }
+        return toDTO(optionalDevice.get());
     }
 
     @PostMapping("/api/device")
